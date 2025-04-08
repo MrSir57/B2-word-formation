@@ -18,7 +18,7 @@
   </style>
 </head>
 <body>
-  <img src="Maerlant Merlet zonder achtergrond-Photoroom.jpg" id="logo" alt="Logo">
+  <img src="logo.jpg" id="logo" alt="Logo">
   <div id="playerNameForm" class="card">
     <h2>Word Formation Game</h2>
     <label for="playerNameInput">Enter your name to start:</label>
@@ -42,9 +42,104 @@
   <canvas class="confetti hidden" id="confetti"></canvas>
 
   <script>
-    const allQuestions = [...]; // same as before
-    // All JavaScript stays the same
+    const allQuestions = [...]; // your existing question bank
+    let questions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 15);
+    let current = 0;
+    let attempts = 0;
+    let totalAttempts = 0;
+    let score = 0;
+    let playerName = "";
+
+    function startGame() {
+      const input = document.getElementById("playerNameInput").value.trim();
+      if (input) {
+        playerName = input;
+        document.getElementById("playerName").textContent = playerName;
+        document.getElementById("playerNameForm").classList.add("hidden");
+        document.getElementById("gameContent").classList.remove("hidden");
+        loadQuestion();
+      } else {
+        alert("Please enter your name to start the game.");
+      }
+    }
+
+    function loadQuestion() {
+      document.getElementById("question").textContent = questions[current].text;
+      document.getElementById("answer").value = "";
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("feedback").className = "feedback";
+      document.getElementById("attempts").textContent = "0";
+      document.getElementById("showAnswerBtn").classList.add("hidden");
+      document.getElementById("nextBtn").classList.add("hidden");
+      document.getElementById("badge").textContent = "";
+      attempts = 0;
+    }
+
+    function checkAnswer() {
+      const userInput = document.getElementById("answer").value.trim().toLowerCase();
+      const feedback = document.getElementById("feedback");
+      attempts++;
+      totalAttempts++;
+      document.getElementById("attempts").textContent = attempts;
+      if (userInput === questions[current].answer) {
+        feedback.textContent = "✅ Correct! Well done.";
+        feedback.className = "feedback correct";
+        if (attempts === 1) score += 2;
+        else if (attempts === 2) score += 1;
+        document.getElementById("score").textContent = score;
+        document.getElementById("nextBtn").classList.remove("hidden");
+        document.getElementById("showAnswerBtn").classList.add("hidden");
+        if (score >= 25) document.getElementById("badge").textContent = "🏆 Word Master!";
+      } else {
+        feedback.textContent = "❌ Not quite. Try again!";
+        feedback.className = "feedback incorrect";
+        if (attempts === 2) {
+          document.getElementById("showAnswerBtn").classList.remove("hidden");
+        }
+      }
+    }
+
+    function showAnswer() {
+      const feedback = document.getElementById("feedback");
+      feedback.textContent = `💡 The correct answer is: ${questions[current].answer}`;
+      feedback.className = "feedback";
+      document.getElementById("nextBtn").classList.remove("hidden");
+      document.getElementById("showAnswerBtn").classList.add("hidden");
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      sendScoreToGoogleSheet(playerName, score, totalAttempts);
+      document.body.innerHTML = `
+        <div class="card">
+          <h2>🏁 Game Over</h2>
+          <p><strong>${playerName}</strong>, your final score is <strong>${score}</strong> in <strong>${totalAttempts}</strong> total attempts.</p>
+          <p><a href="https://docs.google.com/spreadsheets/d/1UvjT6QfEvzuvdZQOhO3SuxKR4K9aUdnUGqJpuG3KnrU/edit" target="_blank">🔝 View the Leaderboard</a></p>
+          <p><button onclick="location.reload()">🔁 Play Again</button></p>
+        </div>
+      `;
+    }
+
+    function sendScoreToGoogleSheet(name, score, attempts) {
+      fetch("https://script.google.com/macros/s/AKfycbxnYY0oIDGnUXvUMlz9gr53GmHsHL7nEXvAeviSoALFJsX78W_HtwdwsGZKFpgDATw/exec", {
+        method: "POST",
+        body: JSON.stringify({ name, score, attempts }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(response => response.text())
+      .then(result => console.log("Score submitted:", result))
+      .catch(error => console.error("Error sending score:", error));
+    }
   </script>
 </body>
 </html>
-
