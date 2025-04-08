@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Formation Game</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; position: relative; }
+    .card { border: 2px solid #ccc; padding: 20px; border-radius: 10px; position: relative; }
+    .feedback { margin-top: 10px; font-weight: bold; }
+    .hidden { display: none; }
+    .correct { color: green; }
+    .incorrect { color: red; }
+    #badge { font-size: 1.5em; margin-top: 10px; }
+    .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Word Formation Exercise (B2)</h2>
+    <p><strong>Player:</strong> <span id="playerName"></span></p>
+    <p id="question"></p>
+    <input type="text" id="answer" placeholder="Your answer here" />
+    <button onclick="checkAnswer()">Submit</button>
+    <button onclick="nextQuestion()" class="hidden" id="nextBtn">Next</button>
+    <button onclick="showAnswer()" class="hidden" id="showAnswerBtn">Show Answer</button>
+    <div class="feedback" id="feedback"></div>
+    <p>Score: <span id="score">0</span> | Attempts: <span id="attempts">0</span></p>
+    <div id="badge"></div>
+  </div>
+  <canvas class="confetti hidden" id="confetti"></canvas>
+  <script>
+    // The script section is omitted here for brevity.
+  </script>
+</body>
+</html>
