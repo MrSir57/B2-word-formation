@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Word Formation Game</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; position: relative; }
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; position: relative; text-align: center; }
     .card { border: 2px solid #ccc; padding: 20px; border-radius: 10px; position: relative; }
     .feedback { margin-top: 10px; font-weight: bold; }
     .hidden { display: none; }
@@ -13,10 +13,20 @@
     .incorrect { color: red; }
     #badge { font-size: 1.5em; margin-top: 10px; }
     .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+    #logo { width: 100px; animation: bob 2s infinite ease-in-out; margin-bottom: 20px; }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
   </style>
 </head>
 <body>
-  <div class="card">
+  <img src="Maerlant Merlet zonder achtergrond-Photoroom.jpg" id="logo" alt="Logo">
+  <div id="playerNameForm" class="card">
+    <h2>Word Formation Game</h2>
+    <label for="playerNameInput">Enter your name to start:</label>
+    <input type="text" id="playerNameInput" placeholder="Your name here" />
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div class="card hidden" id="gameContent">
     <h2>Word Formation Exercise (B2)</h2>
     <p><strong>Player:</strong> <span id="playerName"></span></p>
     <p id="question"></p>
@@ -28,93 +38,43 @@
     <p>Score: <span id="score">0</span> | Attempts: <span id="attempts">0</span></p>
     <div id="badge"></div>
   </div>
+
   <canvas class="confetti hidden" id="confetti"></canvas>
+
   <script>
-    const allQuestions = [
-      { text: "1. Real Madrid are expected to win the _______ this season. (CHAMPION)", answer: "championship" },
-      { text: "2. She had a rough _______. Nobody really cared about her. (CHILD)", answer: "childhood" },
-      { text: "3. Leather _______ are much cheaper than genuine leather bags. (IMITATE)", answer: "imitations" },
-      { text: "4. Causing such a panic in public wasn't a very _______ thing to do. (SENSE)", answer: "sensible" },
-      { text: "5. The government has shown no _______ to cooperate with the environmentalists. (WILLING)", answer: "willingness" },
-      { text: "6. There was a strong sense of _______ among the members of the team. (FRIEND)", answer: "friendship" },
-      { text: "7. His _______ made it hard for him to make friends. (SHY)", answer: "shyness" },
-      { text: "8. The actor's _______ was appreciated by everyone. (PERFORM)", answer: "performance" },
-      { text: "9. Their _______ was not enough to convince the jury. (ARGUE)", answer: "argument" },
-      { text: "10. She looked at him with an expression of total _______. (DISBELIEVE)", answer: "disbelief" },
-      { text: "11. I need more _______ about the job before I can decide. (INFORM)", answer: "information" },
-      { text: "12. They were highly _______ to see the results. (ANTICIPATE)", answer: "anticipated" },
-      { text: "13. Her explanation lacked any logical _______. (CONCLUDE)", answer: "conclusion" },
-      { text: "14. The athlete received a _______ for his outstanding performance. (RECOGNISE)", answer: "recognition" },
-      { text: "15. His frequent _______ made him unpopular with colleagues. (COMPLAIN)", answer: "complaining" }
-    ];
-
-    const questions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 15);
-
-    let current = 0;
-    let attempts = 0;
-    let score = 0;
-    let playerName = prompt("Enter your name to start:");
-    document.getElementById("playerName").textContent = playerName;
-
-    function loadQuestion() {
-      document.getElementById("question").textContent = questions[current].text;
-      document.getElementById("answer").value = "";
-      document.getElementById("feedback").textContent = "";
-      document.getElementById("feedback").className = "feedback";
-      document.getElementById("attempts").textContent = "0";
-      document.getElementById("showAnswerBtn").classList.add("hidden");
-      document.getElementById("nextBtn").classList.add("hidden");
-      document.getElementById("badge").textContent = "";
-      attempts = 0;
-    }
-
-    function checkAnswer() {
-      const userInput = document.getElementById("answer").value.trim().toLowerCase();
-      const feedback = document.getElementById("feedback");
-      attempts++;
-      document.getElementById("attempts").textContent = attempts;
-
-      if (userInput === questions[current].answer) {
-        feedback.textContent = "✅ Correct! Well done.";
-        feedback.className = "feedback correct";
-        if (attempts === 1) score += 2;
-        else if (attempts === 2) score += 1;
-        document.getElementById("score").textContent = score;
-        document.getElementById("nextBtn").classList.remove("hidden");
-        document.getElementById("showAnswerBtn").classList.add("hidden");
-        if (score >= 25) document.getElementById("badge").textContent = "🏆 Word Master!";
-      } else {
-        feedback.textContent = "❌ Not quite. Try again!";
-        feedback.className = "feedback incorrect";
-        if (attempts === 2) {
-          document.getElementById("showAnswerBtn").classList.remove("hidden");
+    function sendScoreToGoogleSheet(name, score, attempts) {
+      fetch("https://script.google.com/macros/s/AKfycbxnYY0oIDGnUXvUMlz9gr53GmHsHL7nEXvAeviSoALFJsX78W_HtwdwsGZKFpgDATw/exec", {
+        method: "POST",
+        body: JSON.stringify({ name, score, attempts }),
+        headers: {
+          "Content-Type": "application/json"
         }
-      }
+      })
+      .then(response => response.text())
+      .then(result => console.log("Score submitted:", result))
+      .catch(error => console.error("Error sending score:", error));
     }
 
-    function showAnswer() {
-      const feedback = document.getElementById("feedback");
-      feedback.textContent = `💡 The correct answer is: ${questions[current].answer}`;
-      feedback.className = "feedback";
-      document.getElementById("nextBtn").classList.remove("hidden");
-      document.getElementById("showAnswerBtn").classList.add("hidden");
+    function endGame() {
+      const name = playerName;
+      const finalScore = score;
+      const finalAttempts = attempts;
+      sendScoreToGoogleSheet(name, finalScore, finalAttempts);
+      alert(`Game over, ${name}! Your score: ${finalScore} in ${finalAttempts} attempts.`);
     }
+
+    // Example logic: call endGame() after 15 questions
+    let currentQuestionIndex = 0;
+    const totalQuestions = 15;
 
     function nextQuestion() {
-      current++;
-      if (current < questions.length) {
-        loadQuestion();
-      } else {
-        document.querySelector(".card").innerHTML = `
-          <h2>Game Over! 🎉</h2>
-          <p>${playerName}, your final score is: ${score}</p>
-          <p><strong>${score >= 25 ? '🏅 Amazing work!' : '👏 Great effort!'}</strong></p>
-          <p>Refresh the page to try again!</p>
-        `;
+      currentQuestionIndex++;
+      if (currentQuestionIndex >= totalQuestions) {
+        endGame();
+        return;
       }
+      // logic to load next question...
     }
-
-    loadQuestion();
   </script>
 </body>
 </html>
