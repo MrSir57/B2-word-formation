@@ -42,7 +42,39 @@
   <canvas class="confetti hidden" id="confetti"></canvas>
 
   <script>
-    const allQuestions = [...]; // your existing question bank
+    const allQuestions = [
+  { text: "Real Madrid are expected to win the _______ this season. (CHAMPION)", answer: "championship" },
+  { text: "She had a rough _______. Nobody really cared about her. (CHILD)", answer: "childhood" },
+  { text: "Leather _______ are much cheaper than genuine leather bags. (IMITATE)", answer: "imitations" },
+  { text: "Causing such a panic in public wasn't a very _______ thing to do. (SENSE)", answer: "sensible" },
+  { text: "The government has shown no _______ to cooperate with the environmentalists. (WILLING)", answer: "willingness" },
+  { text: "James quickly _______ and got into the hot bathtub. (DRESS)", answer: "undressed" },
+  { text: "We made a few _______ to the design of the car. (ADJUST)", answer: "adjustments" },
+  { text: "We _______ the strength of their team. That's why we lost. (ESTIMATE)", answer: "underestimated" },
+  { text: "He is fortunate to have the _______ to listen to several people at once. (ABLE)", answer: "ability" },
+  { text: "The _______ of John F. Kennedy was one of the key events of the 1960s. (ASSASSINATE)", answer: "assassination" },
+  { text: "How can you be so _______ to her feelings? She's just lost her father. (SENSE)", answer: "insensitive" },
+  { text: "Every student must take an _______ exam. (ENTER)", answer: "entrance" },
+  { text: "According to his _______ of the situation we were facing a major conflict. (ASSESS)", answer: "assessment" },
+  { text: "It was one of the many _______ they faced on the long journey. (HARD)", answer: "hardships" },
+  { text: "She has been a _______ for over 20 years. (LIBRARY)", answer: "librarian" },
+  { text: "She was asked if she was taking any _______ at the moment. (MEDICINE)", answer: "medication" },
+  { text: "The police got the necessary information from their _______. (INFORM)", answer: "informant" },
+  { text: "All civil servants are sworn to _______ and cannot speak about certain things. (SECRET)", answer: "secrecy" },
+  { text: "Old people are mostly afraid of _______. That's why they often keep a pet. (LONELY)", answer: "loneliness" },
+  { text: "You can wear your shirt and a pair of jeans. It's an _______ event. (FORMAL)", answer: "informal" },
+  { text: "You have _______ my name. It's Johnson, not Johnston. (SPELL)", answer: "misspelled" },
+  { text: "He went to the club for _______. (COMPANION)", answer: "companionship" },
+  { text: "The government's actions towards reducing pollution were _______. (PRAISE)", answer: "praiseworthy" },
+  { text: "Most experts say that the painting is not a _______. (FORGE)", answer: "forgery" },
+  { text: "The pain became _______, so we had to call an ambulance. (ENDURE)", answer: "unendurable" },
+  { text: "The _______ of the whole country is at stake. (STABLE)", answer: "stability" },
+  { text: "She claimed her _______ and said she had never been at the scene of the crime. (INNOCENT)", answer: "innocence" },
+  { text: "He never regained _______ and died a few weeks after the accident. (CONSCIOUS)", answer: "consciousness" },
+  { text: "Edgar Allan Poe was one of the great _______ figures of his age. (LITERATURE)", answer: "literary" },
+  { text: "When I heard what had happened, I was _______. (SPEAK)", answer: "speechless" }
+];
+
     let questions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 15);
     let current = 0;
     let attempts = 0;
@@ -123,7 +155,7 @@
           <h2>🏁 Game Over</h2>
           <p><strong>${playerName}</strong>, your final score is <strong>${score}</strong> in <strong>${totalAttempts}</strong> total attempts.</p>
           <p>🔝 <strong>Leaderboard</strong></p>
-          <iframe src="https://docs.google.com/spreadsheets/d/1HESjz9bqir_OJemWKeTUwV6wM1y30pTDa1H8xET4zCE/edit?usp=sharing?widget=true&amp;headers=false" width="100%" height="400"></iframe>
+          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQksVZZ4RXH-N1HESjz9bqir_OJemWKeTUwV6wM1y30pTDa1H8xET4zCE/pubhtml?widget=true&amp;headers=false" width="100%" height="400"></iframe>
           <p><button onclick="location.reload()">🔁 Play Again</button></p>
         </div>
       `;
