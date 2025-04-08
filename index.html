@@ -18,25 +18,17 @@
   </style>
 </head>
 <body>
-  <img src="Maerlant Merlet zonder achtergrond-Photoroom.jpg" id="logo" alt="Logo">
-  <div id="playerNameForm" class="card">
-    <h2>Word Formation Game</h2>
-    <label for="playerNameInput">Enter your name to start:</label>
-    <input type="text" id="playerNameInput" placeholder="Your name here" />
-    <button onclick="startGame()">Start Game</button>
+  <div id="playerNameForm">
+  <label for="playerNameInput">Enter your name to start:</label>
+  <input type="text" id="playerNameInput" placeholder="Your name here" />
+  <button onclick="startGame()">Start Game</button>
+</div>
+<div id="gameContent" style="display:none;">
+  <!-- Existing game content here -->
+</div>
+ 
   </div>
-function startGame() {
-  const playerNameInput = document.getElementById("playerNameInput").value.trim();
-  if (playerNameInput) {
-    playerName = playerNameInput;
-    document.getElementById("playerName").textContent = playerName;
-    document.getElementById("playerNameForm").style.display = "none";
-    document.getElementById("gameContent").style.display = "block";
-    loadQuestion();
-  } else {
-    alert("Please enter your name to start the game.");
-  }
-}
+
 
   <div class="card hidden" id="gameContent">
     <h2>Mr Scheltus' Word Formation Exercise (B2)</h2>
