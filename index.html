@@ -30,7 +30,91 @@
   </div>
   <canvas class="confetti hidden" id="confetti"></canvas>
   <script>
-    // The script section is omitted here for brevity.
+    const allQuestions = [
+      { text: "1. Real Madrid are expected to win the _______ this season. (CHAMPION)", answer: "championship" },
+      { text: "2. She had a rough _______. Nobody really cared about her. (CHILD)", answer: "childhood" },
+      { text: "3. Leather _______ are much cheaper than genuine leather bags. (IMITATE)", answer: "imitations" },
+      { text: "4. Causing such a panic in public wasn't a very _______ thing to do. (SENSE)", answer: "sensible" },
+      { text: "5. The government has shown no _______ to cooperate with the environmentalists. (WILLING)", answer: "willingness" },
+      { text: "6. There was a strong sense of _______ among the members of the team. (FRIEND)", answer: "friendship" },
+      { text: "7. His _______ made it hard for him to make friends. (SHY)", answer: "shyness" },
+      { text: "8. The actor's _______ was appreciated by everyone. (PERFORM)", answer: "performance" },
+      { text: "9. Their _______ was not enough to convince the jury. (ARGUE)", answer: "argument" },
+      { text: "10. She looked at him with an expression of total _______. (DISBELIEVE)", answer: "disbelief" },
+      { text: "11. I need more _______ about the job before I can decide. (INFORM)", answer: "information" },
+      { text: "12. They were highly _______ to see the results. (ANTICIPATE)", answer: "anticipated" },
+      { text: "13. Her explanation lacked any logical _______. (CONCLUDE)", answer: "conclusion" },
+      { text: "14. The athlete received a _______ for his outstanding performance. (RECOGNISE)", answer: "recognition" },
+      { text: "15. His frequent _______ made him unpopular with colleagues. (COMPLAIN)", answer: "complaining" }
+    ];
+
+    const questions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 15);
+
+    let current = 0;
+    let attempts = 0;
+    let score = 0;
+    let playerName = prompt("Enter your name to start:");
+    document.getElementById("playerName").textContent = playerName;
+
+    function loadQuestion() {
+      document.getElementById("question").textContent = questions[current].text;
+      document.getElementById("answer").value = "";
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("feedback").className = "feedback";
+      document.getElementById("attempts").textContent = "0";
+      document.getElementById("showAnswerBtn").classList.add("hidden");
+      document.getElementById("nextBtn").classList.add("hidden");
+      document.getElementById("badge").textContent = "";
+      attempts = 0;
+    }
+
+    function checkAnswer() {
+      const userInput = document.getElementById("answer").value.trim().toLowerCase();
+      const feedback = document.getElementById("feedback");
+      attempts++;
+      document.getElementById("attempts").textContent = attempts;
+
+      if (userInput === questions[current].answer) {
+        feedback.textContent = "✅ Correct! Well done.";
+        feedback.className = "feedback correct";
+        if (attempts === 1) score += 2;
+        else if (attempts === 2) score += 1;
+        document.getElementById("score").textContent = score;
+        document.getElementById("nextBtn").classList.remove("hidden");
+        document.getElementById("showAnswerBtn").classList.add("hidden");
+        if (score >= 25) document.getElementById("badge").textContent = "🏆 Word Master!";
+      } else {
+        feedback.textContent = "❌ Not quite. Try again!";
+        feedback.className = "feedback incorrect";
+        if (attempts === 2) {
+          document.getElementById("showAnswerBtn").classList.remove("hidden");
+        }
+      }
+    }
+
+    function showAnswer() {
+      const feedback = document.getElementById("feedback");
+      feedback.textContent = `💡 The correct answer is: ${questions[current].answer}`;
+      feedback.className = "feedback";
+      document.getElementById("nextBtn").classList.remove("hidden");
+      document.getElementById("showAnswerBtn").classList.add("hidden");
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        document.querySelector(".card").innerHTML = `
+          <h2>Game Over! 🎉</h2>
+          <p>${playerName}, your final score is: ${score}</p>
+          <p><strong>${score >= 25 ? '🏅 Amazing work!' : '👏 Great effort!'}</strong></p>
+          <p>Refresh the page to try again!</p>
+        `;
+      }
+    }
+
+    loadQuestion();
   </script>
 </body>
 </html>
