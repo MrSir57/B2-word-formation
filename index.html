@@ -25,6 +25,18 @@
     <input type="text" id="playerNameInput" placeholder="Your name here" />
     <button onclick="startGame()">Start Game</button>
   </div>
+function startGame() {
+  const playerNameInput = document.getElementById("playerNameInput").value.trim();
+  if (playerNameInput) {
+    playerName = playerNameInput;
+    document.getElementById("playerName").textContent = playerName;
+    document.getElementById("playerNameForm").style.display = "none";
+    document.getElementById("gameContent").style.display = "block";
+    loadQuestion();
+  } else {
+    alert("Please enter your name to start the game.");
+  }
+}
 
   <div class="card hidden" id="gameContent">
     <h2>Mr Scheltus' Word Formation Exercise (B2)</h2>
