@@ -162,17 +162,20 @@
     }
 
     function sendScoreToGoogleSheet(name, score, attempts) {
-      fetch("https://script.google.com/macros/s/AKfycbxnYY0oIDGnUXvUMlz9gr53GmHsHL7nEXvAeviSoALFJsX78W_HtwdwsGZKFpgDATw/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbwlkdVUIDUScTJQrbiTWKXCDL5X7O-r_GfU4SKuwXKXl8Y3A2N_OQhX5eRobNhYDyk/exec", {
         method: "POST",
-        body: JSON.stringify({ name, score, attempts }),
         headers: {
           "Content-Type": "application/json"
-        }
-      })
-      .then(response => response.text())
-      .then(result => console.log("Score submitted:", result))
-      .catch(error => console.error("Error sending score:", error));
-    }
+        },
+  body: JSON.stringify({
+    name: 'PlayerName',
+    score: 8,
+    attempts: 3,
+  }),
+})
+  .then(response => response.text())
+  .then(result => console.log('Success:', result))
+  .catch(error => console.error('Error:', error));
   </script>
 </body>
 </html>
