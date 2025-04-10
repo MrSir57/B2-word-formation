@@ -17,21 +17,38 @@
         @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         #start-screen { }
         #game-screen { display: none; }
+        #playerNameForm { }
+        #gameContent { display: none; }
     </style>
 </head>
 <body>
     <div id="start-screen">
         <h1>Welcome to the Word Formation Game!</h1>
         <p>Form words based on the prompts.</p>
-        <button id="start-button">Start Game</button>
+        <button id="initial-start-button">Start Game</button>
     </div>
 
-    <div id="game-screen" class="hidden card">
-        <h2 id="question-prompt"></h2>
-        <input type="text" id="user-answer" placeholder="Your answer">
-        <button id="submit-button">Submit Answer</button>
-        <p id="answer-feedback" class="feedback"></p>
-        <p>Score: <span id="score">0</span> / <span id="total-questions">0</span></p>
+    <div id="game-setup" class="hidden card">
+        <img src="logo.jpg" id="logo" alt="Logo">
+        <div id="playerNameForm">
+            <h2>Word Formation Game</h2>
+            <label for="playerNameInput">Enter your name to start:</label>
+            <input type="text" id="playerNameInput" placeholder="Your name here" />
+            <button id="start-game-button">Start Game</button>
+        </div>
+    </div>
+
+    <div id="gameContent" class="hidden card">
+        <h2>Word Formation Exercise (B2)</h2>
+        <p><strong>Player:</strong> <span id="playerName"></span></p>
+        <p id="question"></p>
+        <input type="text" id="answer" placeholder="Your answer here" />
+        <button onclick="checkAnswer()">Submit</button>
+        <button onclick="nextQuestion()" class="hidden" id="nextBtn">Next</button>
+        <button onclick="showAnswer()" class="hidden" id="showAnswerBtn">Show Answer</button>
+        <div class="feedback" id="feedback"></div>
+        <p>Score: <span id="score">0</span> | Attempts: <span id="attempts">0</span></p>
+        <div id="badge"></div>
     </div>
 
     <div id="end-screen" class="hidden">
@@ -41,221 +58,204 @@
     </div>
 
     <div id="badge" class="hidden">🏆 Well done! 🏆</div>
-    <canvas id="confetti-canvas" class="confetti hidden"></canvas>
+    <canvas id="confetti" class="confetti hidden"></canvas>
 
     <script>
-        const startButton = document.getElementById('start-button');
+        const initialStartButton = document.getElementById('initial-start-button');
         const startScreen = document.getElementById('start-screen');
-        const gameScreen = document.getElementById('game-screen');
+        const gameSetup = document.getElementById('game-setup');
+        const startGameButton = document.getElementById('start-game-button');
+        const gameContent = document.getElementById('gameContent');
+        const playerNameDisplay = document.getElementById('playerName');
+        const questionDisplay = document.getElementById('question');
+        const answerInput = document.getElementById('answer');
+        const submitButton = document.querySelector('#gameContent button[onclick="checkAnswer()"]');
+        const nextButton = document.getElementById('nextBtn');
+        const showAnswerButton = document.getElementById('showAnswerBtn');
+        const feedbackDisplay = document.getElementById('feedback');
+        const scoreDisplay = document.getElementById('score');
+        const attemptsDisplay = document.getElementById('attempts');
+        const badgeDisplay = document.getElementById('badge');
+        const confettiCanvas = document.getElementById('confetti');
 
-        startButton.addEventListener('click', startGame);
+        const allQuestions = [
+            { text: "He gave us a detailed ____________________ of how the accident happened. (DESCRIBE)", answer: "description" },
+            { text: "He moved to the United ____________________ a few years ago. (KING)", answer: "kingdom" },
+            { text: "She has been doing research work as a ____________________. (SCIENCE)", answer: "scientist" },
+            { text: "I wanted to ____________________ but Dad cut me off at once. (APOLOGY)", answer: "apologise" },
+            { text: "Most bird species are under ____________________ by law. (PROTECT)", answer: "protection" },
+            { text: "We enjoyed the ____________________ of the ski hut at night. (WARM)", answer: "warmth" },
+            { text: "He is the most famous ____________________ who has ever had an exhibition in this gallery. (ART)", answer: "artist" },
+            { text: "After his mother's ____________________ he moved to South America. (DIE)", answer: "death" },
+            { text: "I didn't tell him the whole ____________________. (TRUE)", answer: "truth" },
+            { text: "Who was the last Roman ____________________? (EMPIRE)", answer: "emperor" },
+            { text: "Can you tell me the ____________________ of the new restaurant? (LOCATE)", answer: "location" },
+            { text: "The hotel offers a great ____________________ of activities tourists can do. (SELECT)", answer: "selection" },
+            { text: "The view from the top of the mountain is absolutely ____________________. (FASCINATE)", answer: "fascinating" },
+            { text: "____________________, we didn't get caught cheating. (LUCK)", answer: "luckily" },
+            { text: "He likes reading ____________________. (POEM)", answer: "poetry" },
+            { text: "Even the FBI could not solve the ____________________ crime. (MYSTERY)", answer: "mysterious" },
+            { text: "She runs a ____________________ business in Los Angeles. (SUCCEED)", answer: "successful" },
+            { text: "They are doing some research on the ____________________ of nuclear weapons. (DESTROY)", answer: "destruction" },
+            { text: "____________________ is a characteristic that many politicians lack. (HONEST)", answer: "honesty" },
+            { text: "Mum didn't go up to the top because she is afraid of ____________________. (HIGH)", answer: "heights" },
+            { text: "It has snowed ____________________ in the last 24 hours. (CONSIDER)", answer: "considerably" },
+            { text: "We were ____________________ that our mother would survive surgery and get better soon. (HOPE)", answer: "hopeful" },
+            { text: "There were a lot of ____________________ parts that she did not understand. (MEANING)", answer: "meaningless" },
+            { text: "After a few days, the family reported the ____________________ to the police. (APPEAR)", answer: "disappearance" },
+            { text: "We still didn't know the ____________________ of the refugees. (NATION)", answer: "nationality" },
+            { text: "__________________ people are not always the happiest. (WEALTH)", answer: "wealthy" },
+            { text: "There was an ____________________ line of cars waiting to cross the border. (END)", answer: "endless" },
+            { text: "He runs a ____________________ restaurant near the beach. (FASHION)", answer: "fashionable" },
+            { text: "The new cars are equipped with very ____________________ engines. (POWER)", answer: "powerful" },
+            { text: "It was at a very early age that she decided to become a ____________________. (MUSIC)", answer: "musician" },
+            { text: "She deserved the ____________________ she was given by the headmistress. (PUNISH)", answer: "punishment" },
+            { text: "The refugees got ____________________ from the local police force. (PROTECT)", answer: "protection" },
+            { text: "____________________, a number of people died in the accident. (FORTUNATE)", answer: "unfortunately" },
+            { text: "It was very ____________________ at the disco, so we decided to go somewhere else. (NOISE)", answer: "noisy" },
+            { text: "We ____________________ eat out. In most cases we get some takeaway food. (RARE)", answer: "rarely" },
+            { text: "There are thousands of ____________________ people in the large cities of the world. (HOME)", answer: "homeless" },
+            { text: "Use your ____________________ and think of something that will work. (IMAGINE)", answer: "imagination" },
+            { text: "If you accept this job you will have an enormous ____________________ towards your colleagues. (RESPONSIBLE)", answer: "responsibility" },
+            { text: "The test was ____________________ easy. We were finished in no time. (SURPRISE)", answer: "surprisingly" },
+            { text: "The pupils thought they were treated ____________________ by the teacher. (FAIR)", answer: "unfairly" },
+            { text: "She didn't give us any information that turned out to be very ____________________. (USE)", answer: "useful" },
+            { text: "The politician's ____________________ did not come to the event. (SUPPORT)", answer: "supporters" },
+            { text: "It was ____________________ to see anything in the thick fog. (POSSIBLE)", answer: "impossible" },
+            { text: "There are ____________________ methods of succeeding. (VARY)", answer: "various" },
+            { text: "The train was very ____________________, and we had to stand. (CROWD)", answer: "crowded" },
+            { text: "He took a lot of ____________________ with him because it would be a long expedition. (EQUIP)", answer: "equipment" },
+            { text: "I ____________________ eating alone. I always have to have someone to talk to. (LIKE)", answer: "dislike" },
+            { text: "The student council provided financial and ____________________ help for new students. (PRACTICE)", answer: "practical" },
+            { text: "The newspaper is delivered to my doorstep ____________________ at 5 in the morning. (REGULAR)", answer: "regularly" },
+            { text: "The drive up to the mountains ended with a ____________________ view of the sea. (FANTASY)", answer: "fantastic" }
+        ];
 
-        function startGame() {
-            console.log('Start game function called!'); // For debugging
+        let questions;
+        let current = 0;
+        let attempts = 0;
+        let totalAttempts = 0;
+        let score = 0;
+        let playerName = "";
+
+        window.addEventListener("DOMContentLoaded", () => {
+            questions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 15);
+            // Initially show only the very first start screen
+            gameSetup.classList.add('hidden');
+            gameContent.classList.add('hidden');
+        });
+
+        initialStartButton.addEventListener('click', () => {
             startScreen.classList.add('hidden');
-            gameScreen.classList.remove('hidden');
+            gameSetup.classList.remove('hidden');
+        });
 
-  <img src="logo.jpg" id="logo" alt="Logo">
-  <div id="playerNameForm" class="card">
-    <h2>Word Formation Game</h2>
-    <label for="playerNameInput">Enter your name to start:</label>
-    <input type="text" id="playerNameInput" placeholder="Your name here" />
-    <button onclick="startGame()">Start Game</button>
-  </div>
+        startGameButton.addEventListener('click', () => {
+            const input = document.getElementById("playerNameInput").value.trim();
+            if (input) {
+                playerName = input;
+                playerNameDisplay.textContent = playerName;
+                gameSetup.classList.add("hidden");
+                gameContent.classList.remove("hidden");
+                loadQuestion();
+            } else {
+                alert("Please enter your name to start the game.");
+            }
+        });
 
-  <div class="card hidden" id="gameContent">
-    <h2>Word Formation Exercise (B2)</h2>
-    <p><strong>Player:</strong> <span id="playerName"></span></p>
-    <p id="question"></p>
-    <input type="text" id="answer" placeholder="Your answer here" />
-    <button onclick="checkAnswer()">Submit</button>
-    <button onclick="nextQuestion()" class="hidden" id="nextBtn">Next</button>
-    <button onclick="showAnswer()" class="hidden" id="showAnswerBtn">Show Answer</button>
-    <div class="feedback" id="feedback"></div>
-    <p>Score: <span id="score">0</span> | Attempts: <span id="attempts">0</span></p>
-    <div id="badge"></div>
-  </div>
-
-  <canvas class="confetti hidden" id="confetti"></canvas>
-
-  <script>
-    const allQuestions = [
-  { text: "He gave us a detailed ____________________ of how the accident happened. (DESCRIBE)", answer: "description" },
-  { text: "He moved to the United ____________________ a few years ago. (KING)", answer: "kingdom" },
-  { text: "She has been doing research work as a ____________________. (SCIENCE)", answer: "scientist" },
-  { text: "I wanted to ____________________ but Dad cut me off at once. (APOLOGY)", answer: "apologise" },
-  { text: "Most bird species are under ____________________ by law. (PROTECT)", answer: "protection" },
-  { text: "We enjoyed the ____________________ of the ski hut at night. (WARM)", answer: "warmth" },
-  { text: "He is the most famous ____________________ who has ever had an exhibition in this gallery. (ART)", answer: "artist" },
-  { text: "After his mother's ____________________ he moved to South America. (DIE)", answer: "death" },
-  { text: "I didn't tell him the whole ____________________. (TRUE)", answer: "truth" },
-  { text: "Who was the last Roman ____________________? (EMPIRE)", answer: "emperor" },
-  { text: "Can you tell me the ____________________ of the new restaurant? (LOCATE)", answer: "location" },
-  { text: "The hotel offers a great ____________________ of activities tourists can do. (SELECT)", answer: "selection" },
-  { text: "The view from the top of the mountain is absolutely ____________________. (FASCINATE)", answer: "fascinating" },
-  { text: "____________________, we didn't get caught cheating. (LUCK)", answer: "luckily" },
-  { text: "He likes reading ____________________. (POEM)", answer: "poetry" },
-  { text: "Even the FBI could not solve the ____________________ crime. (MYSTERY)", answer: "mysterious" },
-  { text: "She runs a ____________________ business in Los Angeles. (SUCCEED)", answer: "successful" },
-  { text: "They are doing some research on the ____________________ of nuclear weapons. (DESTROY)", answer: "destruction" },
-  { text: "____________________ is a characteristic that many politicians lack. (HONEST)", answer: "honesty" },
-  { text: "Mum didn't go up to the top because she is afraid of ____________________. (HIGH)", answer: "heights" },
-  { text: "It has snowed ____________________ in the last 24 hours. (CONSIDER)", answer: "considerably" },
-  { text: "We were ____________________ that our mother would survive surgery and get better soon. (HOPE)", answer: "hopeful" },
-  { text: "There were a lot of ____________________ parts that she did not understand. (MEANING)", answer: "meaningless" },
-  { text: "After a few days, the family reported the ____________________ to the police. (APPEAR)", answer: "disappearance" },
-  { text: "We still didn't know the ____________________ of the refugees. (NATION)", answer: "nationality" },
-  { text: "__________________ people are not always the happiest. (WEALTH)", answer: "wealthy" },
-  { text: "There was an ____________________ line of cars waiting to cross the border. (END)", answer: "endless" },
-  { text: "He runs a ____________________ restaurant near the beach. (FASHION)", answer: "fashionable" },
-  { text: "The new cars are equipped with very ____________________ engines. (POWER)", answer: "powerful" },
-  { text: "It was at a very early age that she decided to become a ____________________. (MUSIC)", answer: "musician" },
-  { text: "She deserved the ____________________ she was given by the headmistress. (PUNISH)", answer: "punishment" },
-  { text: "The refugees got ____________________ from the local police force. (PROTECT)", answer: "protection" },
-  { text: "____________________, a number of people died in the accident. (FORTUNATE)", answer: "unfortunately" },
-  { text: "It was very ____________________ at the disco, so we decided to go somewhere else. (NOISE)", answer: "noisy" },
-  { text: "We ____________________ eat out. In most cases we get some takeaway food. (RARE)", answer: "rarely" },
-  { text: "There are thousands of ____________________ people in the large cities of the world. (HOME)", answer: "homeless" },
-  { text: "Use your ____________________ and think of something that will work. (IMAGINE)", answer: "imagination" },
-  { text: "If you accept this job you will have an enormous ____________________ towards your colleagues. (RESPONSIBLE)", answer: "responsibility" },
-  { text: "The test was ____________________ easy. We were finished in no time. (SURPRISE)", answer: "surprisingly" },
-  { text: "The pupils thought they were treated ____________________ by the teacher. (FAIR)", answer: "unfairly" },
-  { text: "She didn't give us any information that turned out to be very ____________________. (USE)", answer: "useful" },
-  { text: "The politician's ____________________ did not come to the event. (SUPPORT)", answer: "supporters" },
-  { text: "It was ____________________ to see anything in the thick fog. (POSSIBLE)", answer: "impossible" },
-  { text: "There are ____________________ methods of succeeding. (VARY)", answer: "various" },
-  { text: "The train was very ____________________, and we had to stand. (CROWD)", answer: "crowded" },
-  { text: "He took a lot of ____________________ with him because it would be a long expedition. (EQUIP)", answer: "equipment" },
-  { text: "I ____________________ eating alone. I always have to have someone to talk to. (LIKE)", answer: "dislike" },
-  { text: "The student council provided financial and ____________________ help for new students. (PRACTICE)", answer: "practical" },
-  { text: "The newspaper is delivered to my doorstep ____________________ at 5 in the morning. (REGULAR)", answer: "regularly" },
-  { text: "The drive up to the mountains ended with a ____________________ view of the sea. (FANTASY)", answer: "fantastic" }
-];
-
-    let questions;
-
-window.addEventListener("DOMContentLoaded", () => {
-  questions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 15);
-});
-    let current = 0;
-    let attempts = 0;
-    let totalAttempts = 0;
-    let score = 0;
-    let playerName = "";
-
-    function startGame() {
-      const input = document.getElementById("playerNameInput").value.trim();
-      if (input) {
-        playerName = input;
-        document.getElementById("playerName").textContent = playerName;
-        document.getElementById("playerNameForm").classList.add("hidden");
-        document.getElementById("gameContent").classList.remove("hidden");
-        loadQuestion();
-      } else {
-        alert("Please enter your name to start the game.");
-      }
-    }
-
-    function loadQuestion() {
-      document.getElementById("question").textContent = questions[current].text;
-      document.getElementById("answer").value = "";
-      document.getElementById("feedback").textContent = "";
-      document.getElementById("feedback").className = "feedback";
-      document.getElementById("attempts").textContent = "0";
-      document.getElementById("showAnswerBtn").classList.add("hidden");
-      document.getElementById("nextBtn").classList.add("hidden");
-      document.getElementById("badge").textContent = "";
-      attempts = 0;
-    }
-
-    function checkAnswer() {
-  const userInput = document.getElementById("answer").value.trim().toLowerCase();
-  const feedback = document.getElementById("feedback");
-
-  // Prevent multiple correct submissions on same question
-  if (document.getElementById("nextBtn").classList.contains("hidden") === false) {
-    feedback.textContent = "✔️ You've already answered correctly. Click Next to continue.";
-    return;
-  }
-
-  attempts++;
-  totalAttempts++;
-  document.getElementById("attempts").textContent = attempts;
-
-  if (userInput === questions[current].answer) {
-    feedback.textContent = "✅ Correct! Well done.";
-    feedback.className = "feedback correct";
-    if (attempts === 1) score += 2;
-    else if (attempts === 2) score += 1;
-    document.getElementById("score").textContent = score;
-    document.getElementById("nextBtn").classList.remove("hidden");
-    document.getElementById("showAnswerBtn").classList.add("hidden");
-    if (score >= 25) document.getElementById("badge").textContent = "🏆 Word Master!";
-  } else {
-    feedback.textContent = "❌ Not quite. Try again!";
-    feedback.className = "feedback incorrect";
-    if (attempts === 2) {
-      document.getElementById("showAnswerBtn").classList.remove("hidden");
-    }
-  }
-} else {
-        feedback.textContent = "❌ Not quite. Try again!";
-        feedback.className = "feedback incorrect";
-        if (attempts === 2) {
-          document.getElementById("showAnswerBtn").classList.remove("hidden");
+        function loadQuestion() {
+            questionDisplay.textContent = questions[current].text;
+            answerInput.value = "";
+            feedbackDisplay.textContent = "";
+            feedbackDisplay.className = "feedback";
+            attemptsDisplay.textContent = "0";
+            showAnswerButton.classList.add("hidden");
+            nextButton.classList.add("hidden");
+            badgeDisplay.textContent = "";
+            attempts = 0;
         }
-      }
-    }
 
-    function showAnswer() {
-      const feedback = document.getElementById("feedback");
-      feedback.textContent = `💡 The correct answer is: ${questions[current].answer}`;
-      feedback.className = "feedback";
-      document.getElementById("nextBtn").classList.remove("hidden");
-      document.getElementById("showAnswerBtn").classList.add("hidden");
-    }
+        function checkAnswer() {
+            const userInput = answerInput.value.trim().toLowerCase();
+            const feedback = feedbackDisplay;
 
-    function nextQuestion() {
-      current++;
-      if (current < questions.length) {
-        loadQuestion();
-      } else {
-        endGame();
-      }
-    }
+            // Prevent multiple correct submissions on same question
+            if (nextButton.classList.contains("hidden") === false) {
+                feedback.textContent = "✔️ You've already answered correctly. Click Next to continue.";
+                return;
+            }
 
-    function endGame() {
-      try {
-        sendScoreToGoogleSheet(playerName, score, totalAttempts);
-      } catch (e) {
-        console.warn("Skipping score submission (offline or restricted environment)");
-      }
-      document.body.innerHTML = `
-        <div class="card">
-          <h2>🏁 Game Over</h2>
-          <p><strong>${playerName}</strong>, your final score is <strong>${score}</strong> in <strong>${totalAttempts}</strong> total attempts.</p>
-          <p>🔝 <strong>Leaderboard</strong></p>
-          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQksVZZ4RXH-N1HESjz9bqir_OJemWKeTUwV6wM1y30pTDa1H8xET4zCE/pubhtml?widget=true&amp;headers=false" width="100%" height="400"></iframe>
-          <p><button onclick="location.reload()">🔁 Play Again</button></p>
-        </div>
-      `;
-    }
+            attempts++;
+            totalAttempts++;
+            attemptsDisplay.textContent = attempts;
 
-    function sendScoreToGoogleSheet(name, score, attempts) {
-      if (!navigator.onLine) {
-        throw new Error("Offline mode: cannot send score");
-      }
-      fetch("https://script.google.com/macros/s/AKfycbxnYY0oIDGnUXvUMlz9gr53GmHsHL7nEXvAeviSoALFJsX78W_HtwdwsGZKFpgDATw/exec", {
-        method: "POST",
-        body: JSON.stringify({ name, score, attempts }),
-        headers: {
-          "Content-Type": "application/json"
+            if (userInput === questions[current].answer) {
+                feedback.textContent = "✅ Correct! Well done.";
+                feedback.className = "feedback correct";
+                if (attempts === 1) score += 2;
+                else if (attempts === 2) score += 1;
+                scoreDisplay.textContent = score;
+                nextButton.classList.remove("hidden");
+                showAnswerButton.classList.add("hidden");
+                if (score >= 25) badgeDisplay.textContent = "🏆 Word Master!";
+            } else {
+                feedback.textContent = "❌ Not quite. Try again!";
+                feedback.className = "feedback incorrect";
+                if (attempts === 2) {
+                    showAnswerButton.classList.remove("hidden");
+                }
+            }
         }
-      })
-      .then(response => response.text())
-      .then(result => console.log("Score submitted:", result))
-      .catch(error => console.warn("Error sending score (likely offline or sandboxed environment):", error));
-    }
-  </script>
+
+        function showAnswer() {
+            const feedback = feedbackDisplay;
+            feedback.textContent = `💡 The correct answer is: ${questions[current].answer}`;
+            feedback.className = "feedback";
+            nextButton.classList.remove("hidden");
+            showAnswerButton.classList.add("hidden");
+        }
+
+        function nextQuestion() {
+            current++;
+            if (current < questions.length) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            try {
+                sendScoreToGoogleSheet(playerName, score, totalAttempts);
+            } catch (e) {
+                console.warn("Skipping score submission (offline or restricted environment)");
+            }
+            document.body.innerHTML = `
+                <div class="card">
+                    <h2>🏁 Game Over</h2>
+                    <p><strong>${playerName}</strong>, your final score is <strong>${score}</strong> in <strong>${totalAttempts}</strong> total attempts.</p>
+                    <p>🔝 <strong>Leaderboard</strong></p>
+                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQksVZZ4RXH-N1HESjz9bqir_OJemWKeTUwV6wM1y30pTDa1H8xET4zCE/pubhtml?widget=true&amp;headers=false" width="100%" height="400"></iframe>
+                    <p><button onclick="location.reload()">🔁 Play Again</button></p>
+                </div>
+            `;
+        }
+
+        function sendScoreToGoogleSheet(name, score, attempts) {
+            if (!navigator.onLine) {
+                throw new Error("Offline mode: cannot send score");
+            }
+            fetch("https://script.google.com/macros/s/AKfycbxnYY0oIDGnUXvUMlz9gr53GmHsHL7nEXvAeviSoALFJsX78W_HtwdwsGZKFpgDATw/exec", {
+                method: "POST",
+                body: JSON.stringify({ name, score, attempts }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.text())
+            .then(result => console.log("Score submitted:", result))
+            .catch(error => console.warn("Error sending score (likely offline or sandboxed environment):", error));
+        }
+    </script>
 </body>
 </html>
