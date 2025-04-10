@@ -85,36 +85,34 @@
     }
 
     function checkAnswer() {
-  const userInput = document.getElementById("answer").value.trim().toLowerCase();
-  const feedback = document.getElementById("feedback");
+      const userInput = document.getElementById("answer").value.trim().toLowerCase();
+      const feedback = document.getElementById("feedback");
 
-  // Prevent multiple correct submissions on same question
-  if (document.getElementById("nextBtn").classList.contains("hidden") === false) {
-    feedback.textContent = "✔️ You've already answered correctly. Click Next to continue.";
-    return;
-  }
+      if (document.getElementById("nextBtn").classList.contains("hidden") === false) {
+        feedback.textContent = "✔️ You've already answered correctly. Click Next to continue.";
+        return;
+      }
 
-  attempts++;
-  totalAttempts++;
-  document.getElementById("attempts").textContent = attempts;
+      attempts++;
+      totalAttempts++;
+      document.getElementById("attempts").textContent = attempts;
 
-  if (userInput === questions[current].answer) {
-    feedback.textContent = "✅ Correct! Well done.";
-    feedback.className = "feedback correct";
-    if (attempts === 1) score += 2;
-    else if (attempts === 2) score += 1;
-    document.getElementById("score").textContent = score;
-    document.getElementById("nextBtn").classList.remove("hidden");
-    document.getElementById("showAnswerBtn").classList.add("hidden");
-    if (score >= 25) document.getElementById("badge").textContent = "🏆 Word Master!";
-  } else {
-    feedback.textContent = "❌ Not quite. Try again!";
-    feedback.className = "feedback incorrect";
-    if (attempts === 2) {
-      document.getElementById("showAnswerBtn").classList.remove("hidden");
-    }
-  }
-}
+      if (userInput === questions[current].answer) {
+        feedback.textContent = "✅ Correct! Well done.";
+        feedback.className = "feedback correct";
+        if (attempts === 1) score += 2;
+        else if (attempts === 2) score += 1;
+        document.getElementById("score").textContent = score;
+        document.getElementById("nextBtn").classList.remove("hidden");
+        document.getElementById("showAnswerBtn").classList.add("hidden");
+        if (score >= 25) document.getElementById("badge").textContent = "🏆 Word Master!";
+      } else {
+        feedback.textContent = "❌ Not quite. Try again!";
+        feedback.className = "feedback incorrect";
+        if (attempts === 2) {
+          document.getElementById("showAnswerBtn").classList.remove("hidden");
+        }
+      }
     }
 
     function showAnswer() {
