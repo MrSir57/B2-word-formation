@@ -35,6 +35,11 @@
             <label for="playerNameInput">Enter your name to start:</label>
             <input type="text" id="playerNameInput" placeholder="Your name here" />
             <button id="start-game-button">Start Game</button>
+
+
+            
+
+            
         </div>
     </div>
 
@@ -151,15 +156,27 @@
         });
 
         startGameButton.addEventListener('click', () => {
-            const input = document.getElementById("playerNameInput").value.trim();
-            if (input) {
-                playerName = input;
-                playerNameDisplay.textContent = playerName;
-                gameSetup.classList.add("hidden");
-                gameContent.classList.remove("hidden");
-                loadQuestion();
-            } else {
-                alert("Please enter your name to start the game.");
+    console.log('startGameButton clicked');
+    const input = document.getElementById("playerNameInput").value.trim();
+    console.log('Player name:', input);
+    if (input) {
+        playerName = input;
+        console.log('playerName set:', playerName);
+        console.log('playerNameDisplay:', playerNameDisplay); // Check if this is a valid element
+        if (playerNameDisplay) playerNameDisplay.textContent = playerName;
+        console.log('playerNameDisplay updated');
+        console.log('gameSetup:', gameSetup); // Check if this is a valid element
+        if (gameSetup) gameSetup.classList.add("hidden");
+        console.log('gameSetup hidden');
+        console.log('gameContent:', gameContent); // Check if this is a valid element
+        if (gameContent) gameContent.classList.remove("hidden");
+        console.log('gameContent shown');
+        loadQuestion();
+        console.log('loadQuestion called');
+    } else {
+        alert("Please enter your name to start the game.");
+    }
+});
             }
         });
 
