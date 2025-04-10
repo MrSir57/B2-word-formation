@@ -1,23 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Word Formation Game</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; position: relative; text-align: center; }
-    .card { border: 2px solid #ccc; padding: 20px; border-radius: 10px; position: relative; }
-    .feedback { margin-top: 10px; font-weight: bold; }
-    .hidden { display: none; }
-    .correct { color: green; }
-    .incorrect { color: red; }
-    #badge { font-size: 1.5em; margin-top: 10px; }
-    .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-    #logo { width: 100px; animation: bob 2s infinite ease-in-out; margin-bottom: 20px; }
-    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Formation Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; position: relative; text-align: center; }
+        .card { border: 2px solid #ccc; padding: 20px; border-radius: 10px; position: relative; }
+        .feedback { margin-top: 10px; font-weight: bold; }
+        .hidden { display: none; }
+        .correct { color: green; }
+        .incorrect { color: red; }
+        #badge { font-size: 1.5em; margin-top: 10px; }
+        .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        #logo { width: 100px; animation: bob 2s infinite ease-in-out; margin-bottom: 20px; }
+        @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        #start-screen { }
+        #game-screen { display: none; }
+    </style>
 </head>
 <body>
+    <div id="start-screen">
+        <h1>Welcome to the Word Formation Game!</h1>
+        <p>Form words based on the prompts.</p>
+        <button id="start-button">Start Game</button>
+    </div>
+
+    <div id="game-screen" class="hidden card">
+        <h2 id="question-prompt"></h2>
+        <input type="text" id="user-answer" placeholder="Your answer">
+        <button id="submit-button">Submit Answer</button>
+        <p id="answer-feedback" class="feedback"></p>
+        <p>Score: <span id="score">0</span> / <span id="total-questions">0</span></p>
+    </div>
+
+    <div id="end-screen" class="hidden">
+        <h2>Game Over!</h2>
+        <p>Your final score is: <span id="final-score"></span> / <span id="final-total-questions"></span></p>
+        <button id="restart-button">Play Again</button>
+    </div>
+
+    <div id="badge" class="hidden">🏆 Well done! 🏆</div>
+    <canvas id="confetti-canvas" class="confetti hidden"></canvas>
+
+    <script>
+        const startButton = document.getElementById('start-button');
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+
+        startButton.addEventListener('click', startGame);
+
+        function startGame() {
+            console.log('Start game function called!'); // For debugging
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
   <img src="logo.jpg" id="logo" alt="Logo">
   <div id="playerNameForm" class="card">
     <h2>Word Formation Game</h2>
