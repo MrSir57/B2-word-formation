@@ -227,7 +227,7 @@
       if (!navigator.onLine) {
         throw new Error("Offline mode: cannot send score");
       }
-      fetch("https://script.google.com/macros/s/AKfycbxnYY0oIDGnUXvUMlz9gr53GmHsHL7nEXvAeviSoALFJsX78W_HtwdwsGZKFpgDATw/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbwzdH0h6FvexdoTT1671wy4nbUlX6Lu7JvTqGL487cMj77drH2WLWZB83p98y-AoLdT/exec", {
         method: "POST",
         body: JSON.stringify({ name, score, attempts }),
         headers: {
