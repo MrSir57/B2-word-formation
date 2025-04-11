@@ -217,7 +217,7 @@
           <h2>🏁 Game Over</h2>
           <p><strong>${playerName}</strong>, your final score is <strong>${score}</strong> in <strong>${totalAttempts}</strong> total attempts.</p>
           <p>🔝 <strong>Leaderboard</strong></p>
-          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQy71QDm2t2arm5vnXwrWf361Og72f5QsrNdCLX3I1AsbA7XQHRsB61czV7JOmJHObu-I5fasuWAcED/pubhtml" width="100%" height="400"></iframe>
+          <iframe src="https://docs.google.com/spreadsheets/d/1HESjz9bqir_OJemWKeTUwV6wM1y30pTDa1H8xET4zCE" width="100%" height="400"></iframe>
           <p><button onclick="location.reload()">🔁 Play Again</button></p>
         </div>
       `;
@@ -229,22 +229,15 @@
       }
       fetch("https://script.google.com/macros/s/AKfycbw-f9GTv9HvM6Uebrca6uVrNUEwsr9pzeC1y4b_jEDBA5eyZBOqG9MJlBogUI5vcG64/exec", {
         method: "POST",
-  body: JSON.stringify({
-    name: playerName,
-    score: finalScore,
-    attempts: totalAttempts
-  }),
-  headers: {
-    "Content-Type": "application/json"
-  }
-})
-.then(response => response.text())
-.then(data => {
-  console.log("Server response:", data);
-})
-.catch(error => {
-  console.error("Error posting data:", error);
-});
+        body: JSON.stringify({ name, score, attempts }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(response => response.text())
+      .then(result => console.log("Score submitted:", result))
+      .catch(error => console.warn("Error sending score:", error));
+    }
   </script>
 </body>
 </html>
