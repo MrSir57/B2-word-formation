@@ -121,7 +121,7 @@
 
     function endGame() {
       sendScoreToGoogleSheet(playerName, score, totalAttempts);
-      document.body.innerHTML = \`
+      document.body.innerHTML =\`
         <div class="card">
           <h2>🏁 Game Over</h2>
           <p><strong>\${playerName}</strong>, your final score is <strong>\${score}</strong> in <strong>\${totalAttempts}</strong> total attempts.</p>
