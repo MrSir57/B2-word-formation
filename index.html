@@ -229,15 +229,22 @@
       }
       fetch("https://script.google.com/macros/s/AKfycbxEp52gssxqfky79KUTGeGpw1mFB4XymP_N1MzgNZ1bchR38jHgJ4nEkdBC5SL7F7uG/exec", {
         method: "POST",
-        body: JSON.stringify({ name, score, attempts }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .then(response => response.text())
-      .then(result => console.log("Score submitted:", result))
-      .catch(error => console.warn("Error sending score:", error));
-    }
+  body: JSON.stringify({
+    name: playerName,
+    score: finalScore,
+    attempts: totalAttempts
+  }),
+  headers: {
+    "Content-Type": "application/json"
+  }
+})
+.then(response => response.text())
+.then(data => {
+  console.log("Server response:", data);
+})
+.catch(error => {
+  console.error("Error posting data:", error);
+});
   </script>
 </body>
 </html>
